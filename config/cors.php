@@ -1,7 +1,6 @@
 <?php
 
-$environment = app()->environment();
-$origins = strpos($environment, 'local') !== false
+$origins = strpos(env('APP_ENV'), 'local') !== false
     ? ['*']
     : ['http://tracks-wearfollowtrack.herokuapp.com'];
 
