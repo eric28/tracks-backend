@@ -1,4 +1,5 @@
 const mix = require('laravel-mix');
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin');
 
 /*
  |--------------------------------------------------------------------------
@@ -12,14 +13,15 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js')
-   .sass('resources/sass/app.scss', 'public/css');
+    .sass('resources/sass/app.scss', 'public/css');
 
 mix.webpackConfig(webpack => {
     return {
         plugins: [
             new webpack.DefinePlugin({
                 'DOTENV': JSON.stringify(process.env)
-            })
+            }),
+            new VuetifyLoaderPlugin()
         ]
     };
 });

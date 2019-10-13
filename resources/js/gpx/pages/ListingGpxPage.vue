@@ -1,68 +1,69 @@
 <template>
     <v-app id="inspire">
-        <v-toolbar color="#00858A" app>
+        <v-app-bar color="#00858A" app>
             <v-toolbar-title class="white--text">
                 Listado de GPX
             </v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-toolbar-items>
-                <v-btn :disabled="loading" icon dark @click="loadGrid()">
-                    <i class="material-icons md-18">replay</i>
-                </v-btn>
-                <add-gpx-button style="height: 100%" @added="loadGrid"></add-gpx-button>
-            </v-toolbar-items>
-        </v-toolbar>
-        <v-content>
-            <v-card>
-                <v-container
-                        fluid
-                        grid-list-lg
-                >
-                    <v-layout row wrap>
-                        <v-flex xs12 v-for="item in list" :key="item.id">
-                            <v-card>
-                                <v-card-title primary-title>
-                                    <div>
-                                        <span class="headline">{{item.name}}</span>
-                                    </div>
-                                </v-card-title>
-                                <v-divider light></v-divider>
-                                <l-map :zoom="11" :center="item.center_json" style="min-height: 300px;z-index: 1">
-                                    <l-tile-layer :url="url"></l-tile-layer>
-                                    <l-polyline
-                                            :lat-lngs="item.gpx_json"
-                                            color="green">
-                                    </l-polyline>
-                                    <l-circle
-                                            :lat-lng="item.gpx_json[0]"
-                                            :radius="20"
-                                            color="blue">
-                                    </l-circle>
-                                    <l-circle
-                                            :lat-lng="item.gpx_json[item.gpx_json.length -1 ]"
-                                            :radius="20"
-                                            color="red">
-                                    </l-circle>
-                                </l-map>
-                                <v-sparkline
-                                        :value="generateLine(item.gpx_json)"
-                                        :padding="0"
-                                        :gradient="['#F5B041', '#F4D03F', '#58D68D']"
-                                        :line-width="0"
-                                        :fill="true"
-                                        auto-draw
-                                ></v-sparkline>
-                                <v-divider light></v-divider>
-                                <v-card-actions>
-                                    <v-spacer></v-spacer>
-                                    <v-btn flat color="red" @click="remove(item.id)">Borrar</v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </v-flex>
-                    </v-layout>
+            <v-btn :disabled="loading" :loading="loading" icon dark @click="loadGrid()">
+                <i class="material-icons md-18">replay</i>
+            </v-btn>
+            <add-gpx-button style="height: 100%" @added="loadGrid"></add-gpx-button>
+        </v-app-bar>
 
-                </v-container>
-            </v-card>
+        <v-content>
+            <v-container fluid>
+                <v-row xs12 v-if="list.length == 0" align="center" justify="center">
+                    <v-col cols="12">
+                        <v-alert color="primary" type="info">
+                            Todavía no se ha añadido ningún track
+                            <add-gpx-button style="height: 100%" class="primary" @added="loadGrid"></add-gpx-button>
+                        </v-alert>
+                    </v-col>
+                </v-row>
+                <v-row xs12 v-for="item in list" :key="item.id">
+                    <v-col cols="12">
+                        <v-card>
+                            <v-card-title primary-title>
+                                <div>
+                                    <span class="headline">{{item.name}}</span>
+                                </div>
+                            </v-card-title>
+                            <v-divider light></v-divider>
+                            <l-map :zoom="11" :center="item.center_json" style="min-height: 300px;z-index: 1">
+                                <l-tile-layer :url="url"></l-tile-layer>
+                                <l-polyline
+                                    :lat-lngs="item.gpx_json"
+                                    color="green">
+                                </l-polyline>
+                                <l-circle
+                                    :lat-lng="item.gpx_json[0]"
+                                    :radius="20"
+                                    color="blue">
+                                </l-circle>
+                                <l-circle
+                                    :lat-lng="item.gpx_json[item.gpx_json.length -1 ]"
+                                    :radius="20"
+                                    color="red">
+                                </l-circle>
+                            </l-map>
+                            <v-sparkline
+                                :value="generateLine(item.gpx_json)"
+                                :padding="0"
+                                :gradient="['#F5B041', '#F4D03F', '#58D68D']"
+                                :line-width="0"
+                                :fill="true"
+                                auto-draw
+                            ></v-sparkline>
+                            <v-divider light></v-divider>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn text color="red" @click="remove(item.id)">Borrar</v-btn>
+                            </v-card-actions>
+                        </v-card>
+                    </v-col>
+                </v-row>
+            </v-container>
         </v-content>
     </v-app>
 </template>

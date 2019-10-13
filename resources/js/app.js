@@ -1,12 +1,9 @@
 import Vue from 'vue'
-import Vuetify from 'vuetify'
-
-import 'vuetify/dist/vuetify.min.css' // Ensure you are using css-loader
 
 import ListingGpxPage from './gpx/pages/ListingGpxPage';
-import { Icon }  from 'leaflet'
+import {Icon} from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-
+import vuetify from './plugins/vuetify';
 
 // this part resolve an issue where the markers would not appear
 delete Icon.Default.prototype._getIconUrl;
@@ -17,12 +14,10 @@ Icon.Default.mergeOptions({
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-Vue.use(Vuetify);
-
 new Vue({
-    el: '#app',
+    vuetify,
     components: {
         'listing-gpx': ListingGpxPage
     },
-    template: "<v-app><listing-gpx></listing-gpx></v-app>"
-});
+    template: "<listing-gpx></listing-gpx>"
+}).$mount("#app");

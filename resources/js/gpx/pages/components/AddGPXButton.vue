@@ -20,9 +20,9 @@
                            @change="changeGPX($event)"/>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn color="error" flat @click="dialog=false">Cerrar</v-btn>
+                    <v-btn color="error" text @click="dialog=false">Cerrar</v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" :loading="loading" :disabled="loading" flat @click="addGPX()">
+                    <v-btn color="primary" :loading="loading" :disabled="loading" text @click="addGPX()">
                         Añadir
                     </v-btn>
                 </v-card-actions>
