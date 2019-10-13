@@ -3,6 +3,9 @@
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 
+$channel = env('APP_ENV', 'production') == 'production'
+    ? 'heroku' : 'single';
+
 return [
 
     /*
@@ -16,7 +19,7 @@ return [
     |
     */
 
-    'default' => env('LOG_CHANNEL', 'stack'),
+    'default' => env('LOG_CHANNEL', $channel),
 
     /*
     |--------------------------------------------------------------------------
@@ -67,7 +70,7 @@ return [
         ],
 
         'papertrail' => [
-            'driver'  => 'monolog',
+            'driver' => 'monolog',
             'level' => 'debug',
             'handler' => SyslogUdpHandler::class,
             'handler_with' => [
