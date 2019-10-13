@@ -1,6 +1,6 @@
 <?php
 
-$origins = strpos(env('APP_ENV'), 'local') !== false
+$origins = strpos(env('APP_ENV', 'production'), 'local') !== false
     ? ['*']
     : ['http://tracks-wearfollowtrack.herokuapp.com'];
 
