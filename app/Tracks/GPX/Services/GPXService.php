@@ -59,7 +59,7 @@ class GPXService
      */
     public function addGPX($name, $gpxB64)
     {
-        if (count($name) == 0) throw new GPXInvalidNameException("Se debe indicar un nombre para la ruta");
+        if (strlen($name) == 0) throw new GPXInvalidNameException("Se debe indicar un nombre para la ruta");
 
         try {
             $xmlGpx = Base64Utils::decode(Base64Utils::getB64Data($gpxB64));
