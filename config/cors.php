@@ -18,7 +18,7 @@ return [
     */
 
     'supportsCredentials' => false,
-    'allowedOrigins' => [$origins],
+    'allowedOrigins' => $origins,
     'allowedOriginsPatterns' => [],
     'allowedHeaders' => ['*'],
     'allowedMethods' => ['*'],
