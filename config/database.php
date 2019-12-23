@@ -2,10 +2,10 @@
 
 $url = parse_url(getenv("CLEARDB_DATABASE_URL"));
 
-$host = $url["host"];
-$username = $url["user"];
-$password = $url["pass"];
-$database = substr($url["path"], 1);
+$host = array_key_exists("host", $url) ? $url["host"] : null;
+$username = array_key_exists("user", $url) ? $url["user"] : null;
+$password = array_key_exists("pass", $url) ? $url["pass"] : null;
+$database = array_key_exists("path", $url) ? substr($url["path"], 1) : null;
 
 return [
 

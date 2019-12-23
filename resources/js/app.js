@@ -19,5 +19,5 @@ new Vue({
     components: {
         'listing-gpx': ListingGpxPage
     },
-    template: "<listing-gpx></listing-gpx>"
+    template: "<listing-gpx/>"
 }).$mount("#app");

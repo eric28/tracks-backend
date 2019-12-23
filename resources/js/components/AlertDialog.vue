@@ -1,23 +1,19 @@
 <template>
-    <v-dialog v-model="dialog" persistent>
+    <v-dialog :max-width="!esMovil ? '500px': undefined" v-model="dialog" persistent>
         <v-card>
             <v-card-title class="title">
-                <div>
-                    <v-alert
-                            :value="true"
-                            :type="type"
-                            v-html="title"
-                    >
-                    </v-alert>
-                </div>
+                {{title}}
             </v-card-title>
-            <v-card-text class="content" v-html="message"></v-card-text>
+            <v-card-text class="content">
+                <v-alert :value="true" :type="type" prominent>
+                    <div v-html="message"></div>
+                </v-alert>
+            </v-card-text>
             <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn @click="close">Cerrar</v-btn>
+                <v-spacer/>
+                <v-btn text @click="close">Cerrar</v-btn>
             </v-card-actions>
         </v-card>
-
     </v-dialog>
 </template>
 
@@ -50,6 +46,9 @@
                     default:
                         return "Advertencia";
                 }
+            },
+            esMovil() {
+                return this.$vuetify.breakpoint.smAndDown;
             }
         },
         watch: {

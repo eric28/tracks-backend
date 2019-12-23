@@ -3,12 +3,15 @@
 namespace App\Tracks\GPX\Services;
 
 
-use App\Models\GPX;
 use App\Tracks\Commons\Utils\Base64Utils;
 use App\Tracks\GPX\Exceptions\GPXInvalidNameException;
 use App\Tracks\GPX\Exceptions\GPXRouteNotGeneratedException;
+use App\Tracks\GPX\Models\GPX;
+use App\Tracks\GPX\Models\TrackPoint;
 use App\Tracks\GPX\Repositories\GPXRepository;
+use App\Tracks\GPX\Utils\GpxDistancesCalculator;
 use Exception;
+use LaravelDoctrine\ORM\Facades\EntityManager;
 use SimpleXMLElement;
 
 class GPXService
@@ -24,29 +27,11 @@ class GPXService
         $this->GPXRepository = $GPXRepository;
     }
 
-    public function listGPX($start, $length, $sort)
+    public function listGPX($perPage, $page)
     {
-        if (is_null($sort)) $sort = GPX::COLUMN_ID;
+        $data = $this->GPXRepository->paginateAll($perPage, $page);
 
-        $order = [[
-            str_replace_first('-', '', $sort),
-            starts_with($sort, '-') ? "desc" : "asc"
-        ]];
-
-        $data = $this->GPXRepository->findByCriteria([], ['*'], $start, $length, $order);
-
-        $total = $this->GPXRepository->countByCriteria([]);
-
-        $dataProcess = [];
-        foreach ($data as $dat) {
-            $dat[GPX::COLUMN_GPX_JSON] = json_decode($dat[GPX::COLUMN_GPX_JSON]);
-            $dat[GPX::COLUMN_CENTER] = json_decode($dat[GPX::COLUMN_CENTER]);
-            $dataProcess[] = $dat;
-        }
-        return [
-            'data' => $dataProcess,
-            'total' => $total,
-        ];
+        return $data->toArray();
     }
 
     /**
@@ -82,22 +67,31 @@ class GPXService
 
         $center = $this->GetCenterFromDegrees($route);
 
-        $data = [
-            GPX::COLUMN_NAME => $name,
-            GPX::COLUMN_GPX_JSON => json_encode($route),
-            GPX::COLUMN_CENTER => json_encode($center),
-        ];
+        $points = [];
+        foreach ($route as $routePoint) {
+            $points[] = new TrackPoint(floatval($routePoint["lat"]), floatval($routePoint["lon"]),
+                floatval($routePoint["elevation"]));
+        }
 
-        $id = $this->GPXRepository->add($data);
+        $centerPoint = new TrackPoint(floatval($center["lat"]), floatval($center["lon"]), 0.0);
 
-        if ($id === false) throw new GPXNotSavedException("No se ha podido guardar el GPX");
+        $unevennessPositive = GpxDistancesCalculator::getUnevennessPositiveInMeters($points);
+        $distance = GpxDistancesCalculator::caculateDistanceInMeters($points);
 
-        return $id;
+        $gpx = new GPX($name, $centerPoint, $points, $distance, $unevennessPositive);
+
+        $gpx = $this->GPXRepository->persist($gpx);
+
+        if (is_null($gpx->getId())) throw new GPXNotSavedException("No se ha podido guardar el GPX");
+
+        return $gpx->getId();
     }
 
     public function removeGPX($id)
     {
-        return $this->GPXRepository->remove($id);
+        $gpx = $this->GPXRepository->find($id);
+
+        return $this->GPXRepository->remove($gpx);
     }
 
     /**

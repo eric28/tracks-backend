@@ -4,18 +4,14 @@
 namespace App\Tracks\GPX\Repositories;
 
 
-use App\Models\GPX;
-use App\Tracks\Commons\Repositories\GenericRepository;
+use App\Tracks\Commons\Repositories\BaseRepository;
+use App\Tracks\GPX\Models\GPX;
+use Doctrine\ORM\EntityManagerInterface;
 
-class GPXRepository extends GenericRepository
+class GPXRepository extends BaseRepository
 {
-    private $GPXModel;
-
-    public function __construct(GPX $model)
+    public function __construct(EntityManagerInterface $em)
     {
-        parent::__construct($model);
-
-        $this->GPXModel = $model;
+        parent::__construct($em, GPX::class);
     }
-
 }

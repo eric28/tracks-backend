@@ -24,14 +24,12 @@ class GpxController extends Controller
         $this->GPXService = $GPXService;
     }
 
-
     public function listing(Request $request)
     {
-        $start = $request->get('start');
-        $length = $request->get('length');
-        $sort = $request->get('sort');
+        $perPage = $request->get('per_page', 15);
+        $page = $request->get('page', 1);
 
-        return response()->json($this->GPXService->listGPX($start, $length, $sort));
+        return response()->json($this->GPXService->listGPX($perPage, $page));
     }
 
     public function add(Request $request)

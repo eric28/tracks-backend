@@ -3,26 +3,28 @@
         <alert-dialog v-model="alert.show" :type="alert.type" :message="alert.message" @close="closeAlert">
         </alert-dialog>
 
-        <v-btn slot="activator" icon dark @click="dialog=true">
+        <v-btn class="white--text" slot="activator" :icon="esMovil" :text="!esMovil" @click="dialog=true">
+            <div v-show="!esMovil">Añadir</div>
             <i class="material-icons md-18">add</i>
         </v-btn>
 
-        <v-dialog v-model="dialog" max-width="500px" scrollable persistent transition="dialog-bottom-transition">
+        <v-dialog v-model="dialog" :fullscreen="esMovil" max-width="500px" scrollable persistent
+                  transition="dialog-bottom-transition">
             <v-card>
-                <v-card-title class="grey lighten-2">
+                <v-card-title class="primary white--text">
                     Añadir GPX
                 </v-card-title>
-                <v-card-text>
-                    <v-text-field label="Nombre" v-model="gpx.name"></v-text-field>
-                    <v-btn color="primary" :disabled="loading" @click="clickFileUpload()" v-html="fileName"></v-btn>
+                <v-card-text class="pt-2">
+                    <v-text-field label="Nombre" v-model="gpx.name"/>
+                    <v-btn color="primary" :disabled="loading" @click="clickFileUpload()" v-html="fileName"/>
 
                     <input style="display: none" class="form-control" ref="fileupload" type="file" accept=".gpx"
                            @change="changeGPX($event)"/>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn color="error" text @click="dialog=false">Cerrar</v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn color="primary" :loading="loading" :disabled="loading" text @click="addGPX()">
+                    <v-btn color="error" text @click="closeModal()">Cerrar</v-btn>
+                    <v-spacer/>
+                    <v-btn color="primary" :loading="loading" :disabled="!canAdd() || loading" text @click="addGPX()">
                         Añadir
                     </v-btn>
                 </v-card-actions>
@@ -57,7 +59,13 @@
         computed: {
             fileName: function () {
                 if (this.file == null) return "Selecciona un fichero .gpx";
-                else return this.file.name;
+
+                if (this.file.name.length > 20) return `${this.file.name.substring(0, 20)}...`;
+
+                return this.file.name;
+            },
+            esMovil() {
+                return this.$vuetify.breakpoint.smAndDown;
             }
         },
         methods: {
@@ -78,6 +86,11 @@
                     this.gpx.file = null;
                 }
             },
+            canAdd() {
+                if (this.gpx.file == null || this.gpx.file.length < 30) return false;
+
+                return this.gpx.name != null && this.gpx.name.length > 3;
+            },
             addGPX() {
                 this.loading = true;
 
@@ -86,27 +99,30 @@
                     .then((response) => {
                         this.$emit('imported');
                         this.alert.type = "success";
-                        this.alert.message = "Añadido correctamente";
+                        this.alert.message = "Track añadido correctamente";
                         this.alert.show = true;
-                        this.dialog = false;
+                        this.closeModal();
                         this.$emit("added", response);
                     })
                     .catch((error) => {
-                        this.alert.message = typeof error.mensaje !== "undefined" ? error.mensaje : error;
+                        this.alert.message = typeof error.message !== "undefined" ? error.message : error;
                         this.alert.type = "error";
                         this.alert.show = true;
                     })
                     .finally(() => {
                         this.loading = false;
-                        this.gpx.name = null;
-                        this.gpx.file = null;
-                        this.resetInput();
                     });
 
             },
             clickFileUpload() {
                 const input = this.$refs.fileupload;
                 input.click();
+            },
+            closeModal() {
+                this.resetInput();
+                this.gpx.name = null;
+                this.gpx.file = null;
+                this.dialog = false;
             },
             closeAlert() {
                 this.alert.show = false;
