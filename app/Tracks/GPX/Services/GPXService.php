@@ -11,7 +11,6 @@ use App\Tracks\GPX\Models\TrackPoint;
 use App\Tracks\GPX\Repositories\GPXRepository;
 use App\Tracks\GPX\Utils\GpxDistancesCalculator;
 use Exception;
-use LaravelDoctrine\ORM\Facades\EntityManager;
 use SimpleXMLElement;
 
 class GPXService
