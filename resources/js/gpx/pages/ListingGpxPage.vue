@@ -14,7 +14,7 @@
         </v-app-bar>
 
         <v-content class="grey">
-            <v-container>
+            <v-container id="list-container">
 
                 <v-row xs12 v-if="list.length < 1 && !loading" align="center" justify="center">
                     <v-col cols="12">
@@ -26,13 +26,6 @@
                                 </v-col>
                             </v-row>
                         </v-alert>
-                    </v-col>
-                </v-row>
-
-                <v-row xs12 v-show="loading" v-for="i in [0,1,2]" :key="i">
-                    <v-col cols="12">
-                        <v-skeleton-loader class="mx-auto grey darken-2" type="card-heading"/>
-                        <v-skeleton-loader class="mx-auto" type="card"/>
                     </v-col>
                 </v-row>
 
@@ -101,6 +94,14 @@
                     </v-col>
                 </v-row>
 
+                <v-row xs12 v-show="loading" v-for="i in [0,1,2]" :key="i">
+                    <v-col cols="12">
+                        <v-skeleton-loader class="mx-auto grey darken-2" type="card-heading"/>
+                        <v-skeleton-loader class="mx-auto" type="card"/>
+                    </v-col>
+                </v-row>
+
+                <div v-intersect="nextPage"></div>
             </v-container>
         </v-content>
     </v-app>
@@ -160,12 +161,12 @@
             }
         },
         mounted() {
-            this.loadGrid();
+            this.loadPage();
         },
         watch: {
             pagination: {
                 handler() {
-                    this.loadGrid();
+                    this.loadPage();
                 },
                 deep: true
             },
@@ -185,9 +186,27 @@
 
                 return params;
             },
+            nextPage() {
+                if (this.loading) return;
+                if (this.totalItems <= this.pagination.rowsPerPage * this.pagination.page) return;
+                this.pagination.page += 1;
+            },
             loadGrid() {
+                this.$vuetify.goTo('#list-container', {
+                    duration: 1,
+                    offset: 0,
+                    easing: 'linear'
+                });
                 this.loading = true;
                 this.list = [];
+                if (this.pagination.page === 1) {
+                    this.loadPage();
+                } else {
+                    this.pagination.page = 1;
+                }
+            },
+            loadPage() {
+                this.loading = true;
 
                 let params = this.generateQuery();
                 params.per_page = this.pagination.rowsPerPage;
@@ -196,7 +215,7 @@
                 let url = 'gpx-listing';
                 HttpHelper.get(url, params)
                     .then(projects => {
-                        this.list = projects.data;
+                        this.list = this.list.concat(projects.data);
                         this.totalItems = projects.total;
                     })
                     .finally(() => {
