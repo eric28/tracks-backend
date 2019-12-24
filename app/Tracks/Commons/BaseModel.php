@@ -26,4 +26,13 @@ abstract class BaseModel implements Arrayable
     {
         return $this->id;
     }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+
 }
