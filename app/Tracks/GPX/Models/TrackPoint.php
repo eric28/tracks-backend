@@ -1,30 +1,12 @@
-<?php /** @noinspection PhpUnusedAliasInspection */
+<?php
 
 namespace App\Tracks\GPX\Models;
 
-use App\Tracks\Commons\BaseModel;
-use Doctrine\ORM\Mapping AS ORM;
-
-/**
- * @ORM\Entity
- * @ORM\Table(name="track_points")
- */
-class TrackPoint extends BaseModel
+class TrackPoint
 {
-    /**
-     * @ORM\Column(type="float", precision=4, scale=4)
-     */
-    protected $latitude;
-
-    /**
-     * @ORM\Column(type="float", precision=4, scale=4)
-     */
-    protected $longitude;
-
-    /**
-     * @ORM\Column(type="float", precision=4, scale=4)
-     */
-    protected $elevation;
+    private $latitude;
+    private $longitude;
+    private $elevation;
 
     /**
      * TrackPoint constructor.
@@ -94,7 +76,6 @@ class TrackPoint extends BaseModel
     public function toArray()
     {
         return [
-            "id" => $this->getId(),
             "latitude" => $this->getLatitude(),
             "longitude" => $this->getLongitude(),
             "elevation" => $this->getElevation()

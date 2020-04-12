@@ -3,8 +3,7 @@
 namespace App\Tracks\GPX\Models;
 
 use App\Tracks\Commons\BaseModel;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\Mapping AS ORM;
+use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
@@ -18,19 +17,12 @@ class GPX extends BaseModel
     protected $name;
 
     /**
-     * @var TrackPoint
-     * @ORM\OneToOne(targetEntity="TrackPoint", cascade={"persist", "remove"})
-     * @ORM\JoinColumn(name="center_point_id", referencedColumnName="id")
+     * @ORM\Column(type="string")
      */
     protected $centerJson;
 
     /**
-     * @var array
-     * @ORM\ManyToMany(targetEntity="TrackPoint", cascade={"persist", "remove"})
-     * @ORM\JoinTable(name="gpx_track_points",
-     *      joinColumns={@ORM\JoinColumn(name="track_point_id", referencedColumnName="id")},
-     *      inverseJoinColumns={@ORM\JoinColumn(name="gpx_id", referencedColumnName="id", unique=true)}
-     *      )
+     * @ORM\Column(type="text",length=16777215)
      */
     protected $gpxJson;
 
@@ -55,9 +47,12 @@ class GPX extends BaseModel
     public function __construct($name, TrackPoint $centerJson, array $gpxJson, float $distance,
                                 float $unevennessPositive)
     {
+        $callback = function (TrackPoint $point) {
+            return $point->toArray();
+        };
         $this->name = $name;
-        $this->centerJson = $centerJson;
-        $this->gpxJson = new ArrayCollection($gpxJson);
+        $this->centerJson = json_encode($centerJson->toArray());
+        $this->gpxJson = json_encode(array_map($callback, $gpxJson));
         $this->distance = $distance;
         $this->unevennessPositive = $unevennessPositive;
     }
@@ -83,7 +78,9 @@ class GPX extends BaseModel
      */
     public function getCenterJson(): TrackPoint
     {
-        return $this->centerJson;
+        $center = json_decode($this->centerJson, true);
+
+        return new TrackPoint($center["latitude"], $center["longitude"], $center["elevation"]);
     }
 
     /**
@@ -91,7 +88,7 @@ class GPX extends BaseModel
      */
     public function setCenterJson(TrackPoint $centerJson): void
     {
-        $this->centerJson = $centerJson;
+        $this->centerJson = json_encode($centerJson->toArray());
     }
 
     /**
@@ -99,15 +96,22 @@ class GPX extends BaseModel
      */
     public function getGpxJson()
     {
-        return $this->gpxJson;
+        $callback = function (array $point) {
+            return new TrackPoint($point["latitude"], $point["longitude"], $point["elevation"]);
+        };
+
+        return array_map($callback, json_decode($this->gpxJson, true));
     }
 
     /**
      * @param mixed $gpxJson
      */
-    public function setGpxJson($gpxJson): void
+    public function setGpxJson(array $gpxJson): void
     {
-        $this->gpxJson = $gpxJson;
+        $callback = function (TrackPoint $point) {
+            return $point->toArray();
+        };
+        $this->gpxJson = json_encode(array_map($callback, $gpxJson));
     }
 
     /**
