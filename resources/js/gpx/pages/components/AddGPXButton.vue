@@ -5,7 +5,7 @@
 
         <v-btn class="white--text" slot="activator" :icon="esMovil" :text="!esMovil" @click="dialog=true">
             <div v-show="!esMovil">Añadir</div>
-            <i class="material-icons md-18">add</i>
+            <v-icon>add</v-icon>
         </v-btn>
 
         <v-dialog v-model="dialog" :fullscreen="esMovil" max-width="500px" scrollable persistent
@@ -21,10 +21,11 @@
                     <input style="display: none" class="form-control" ref="fileupload" type="file" accept=".gpx"
                            @change="changeGPX($event)"/>
                 </v-card-text>
+                <v-divider/>
                 <v-card-actions>
                     <v-btn color="error" text @click="closeModal()">Cerrar</v-btn>
                     <v-spacer/>
-                    <v-btn color="primary" :loading="loading" :disabled="!canAdd() || loading" text @click="addGPX()">
+                    <v-btn depressed color="primary" :loading="loading" :disabled="!canAdd() || loading" @click="addGPX()">
                         Añadir
                     </v-btn>
                 </v-card-actions>

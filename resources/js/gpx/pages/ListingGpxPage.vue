@@ -13,10 +13,10 @@
             <add-gpx-button @added="loadGrid"/>
         </v-app-bar>
 
-        <v-content class="grey">
+        <v-main class="grey">
             <v-container id="list-container">
 
-                <v-row xs12 v-if="list.length < 1 && !loading" align="center" justify="center">
+                <v-row v-if="list.length < 1 && !loading" align="center" justify="center">
                     <v-col cols="12">
                         <v-alert color="primary" type="info" prominent>
                             <v-row align="center">
@@ -29,7 +29,7 @@
                     </v-col>
                 </v-row>
 
-                <v-row xs12 v-for="item in list" :key="item.id">
+                <v-row v-for="item in list" :key="item.id">
                     <v-col cols="12">
                         <v-card>
                             <v-card-title class="primary white--text headline" primary-title>
@@ -94,7 +94,7 @@
                     </v-col>
                 </v-row>
 
-                <v-row xs12 v-show="loading" v-for="i in [0,1,2]" :key="i">
+                <v-row v-show="loading" v-for="i in [0,1,2]" :key="`${i}-skl`">
                     <v-col cols="12">
                         <v-skeleton-loader class="mx-auto grey darken-2" type="card-heading"/>
                         <v-skeleton-loader class="mx-auto" type="card"/>
@@ -103,7 +103,7 @@
 
                 <div v-intersect="nextPage"></div>
             </v-container>
-        </v-content>
+        </v-main>
     </v-app>
 </template>
 
@@ -173,7 +173,9 @@
         },
         methods: {
             formatTitle(title) {
-                if (title.length > 20) return `${title.substring(0, 20)}...`;
+                let limit = this.esMovil ? 20 : 60;
+
+                if (title.length > limit) return `${title.substring(0, limit)}...`;
                 return title;
             },
             generateQuery() {

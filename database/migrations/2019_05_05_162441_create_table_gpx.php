@@ -18,6 +18,8 @@ class CreateTableGpx extends Migration
             $table->string('name');
             $table->string('center_json');
             $table->longText('gpx_json');
+            $table->float('distance');
+            $table->float('unevenness_positive');
             $table->timestamps();
         });
     }
