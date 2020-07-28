@@ -2,8 +2,7 @@
 
 $origins = strpos(env('APP_ENV', 'production'), 'local') !== false
     ? ['*']
-    : ['http://tracks-wearfollowtrack.herokuapp.com'];
-
+    : [env('APP_URL', ''), 'https://tracks-wearfollowtrack.herokuapp.com'];
 
 return [
 
